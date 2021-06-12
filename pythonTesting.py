@@ -1,13 +1,14 @@
-def midSquareHash(num):
-    numSquare = str(num ** 2)
-    if len(numSquare)%2 == 0:
-        lowMid = int(numSquare[len(numSquare)//2 - 1])
-        highMid = int(numSquare[(len(numSquare)//2)])
-        midNumber = int("{}{}".format(lowMid,highMid))
-        remainder = midNumber%11
-        return remainder
-    else:
-        return int(numSquare[(len(numSquare)//2)])
- 
+from DataStructureExamples import HashTable
 
-print(midSquareHash(31))
+H=HashTable()
+H[54]="cat"
+H[26]="dog"
+H[93]="lion"
+H[17]="tiger"
+H[77]="bird"
+H[31]="cow"
+H[44]="goat"
+H[55]="pig"
+H[20]="chicken"
+print(H.slots)
+print(H.data)
