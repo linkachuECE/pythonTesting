@@ -1,6 +1,13 @@
-from DataStructureExamples import *
+def midSquareHash(num):
+    numSquare = str(num ** 2)
+    if len(numSquare)%2 == 0:
+        lowMid = int(numSquare[len(numSquare)//2 - 1])
+        highMid = int(numSquare[(len(numSquare)//2)])
+        midNumber = int("{}{}".format(lowMid,highMid))
+        remainder = midNumber%11
+        return remainder
+    else:
+        return int(numSquare[(len(numSquare)//2)])
+ 
 
-stack = Stack()
-print("just messing around with git")
-
-print("second edit")
+print(midSquareHash(31))
