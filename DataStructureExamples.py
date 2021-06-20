@@ -396,7 +396,15 @@ class HashTable:
 	def __setitem__(self,key,data):
 		self.put(key,data)
 
+# Sorting algorithms follow
+
 def shortBubbleSort(alist):
+
+	isString = False
+	if isinstance(alist, str):
+		alist = ordinalStringList(alist)
+		isString = True
+	
 	exchanges = True
 	passnum = len(alist)-1
 	while passnum > 0 and exchanges:
@@ -408,9 +416,19 @@ def shortBubbleSort(alist):
 				alist[i] = alist[i+1]
 				alist[i+1] = temp
 		passnum = passnum-1
-	return alist
+	
+	if isString:
+		return unicodeToString(alist)
+	else:
+		return alist
 
 def selectionSort(alist):
+
+	isString = False
+	if isinstance(alist, str):
+		alist = ordinalStringList(alist)
+		isString = True
+
 	for fillslot in range(len(alist)-1,0,-1):
 		positionOfMax=0
 		for location in range(1,fillslot+1):
@@ -420,9 +438,19 @@ def selectionSort(alist):
 		temp = alist[fillslot]
 		alist[fillslot] = alist[positionOfMax]
 		alist[positionOfMax] = temp
-	return alist
+
+	if isString:
+		return unicodeToString(alist)
+	else:
+		return alist
 
 def insertionSort(alist):
+
+	isString = False
+	if isinstance(alist, str):
+		alist = ordinalStringList(alist)
+		isString = True
+
 	for index in range(1,len(alist)):
 		currentvalue = alist[index]
 		position = index
@@ -432,9 +460,19 @@ def insertionSort(alist):
 			position = position-1
 
 		alist[position]=currentvalue
-	return alist
+	
+	if isString:
+		return unicodeToString(alist)
+	else:
+		return alist
 
 def shellSort(alist):
+
+	isString = False
+	if isinstance(alist, str):
+		alist = ordinalStringList(alist)
+		isString = True
+
 	sublistcount = len(alist)//2
 	while sublistcount > 0:
 
@@ -444,7 +482,11 @@ def shellSort(alist):
 		print("After increments of size",sublistcount,"The list is",alist)
 
 		sublistcount = sublistcount // 2
-	return alist
+
+	if isString:
+		return unicodeToString(alist)
+	else:
+		return alist
 
 def gapInsertionSort(alist,start,gap):
 	for i in range(start+gap,len(alist),gap):
@@ -459,8 +501,14 @@ def gapInsertionSort(alist,start,gap):
 		alist[position]=currentvalue
 
 def mergeSort(alist):
-	print("Splitting ",alist)
+
+	isString = False
+	if isinstance(alist, str):
+		alist = ordinalStringList(alist)
+		isString = True
+
 	if len(alist)>1:
+		print("Splitting ",alist)
 		mid = len(alist)//2
 		lefthalf = alist[:mid]
 		righthalf = alist[mid:]
@@ -489,10 +537,27 @@ def mergeSort(alist):
 			alist[k]=righthalf[j]
 			j=j+1
 			k=k+1
-	print("Merging ",alist)
+		print("Merging ",alist)
+	
+	if isString:
+		return unicodeToString(alist)
+	else:
+		return alist
 
 def quickSort(alist):
+
+	isString = False
+	if isinstance(alist, str):
+		alist = ordinalStringList(alist)
+		isString = True
+
 	quickSortHelper(alist,0,len(alist)-1)
+
+	if isString:
+		return unicodeToString(alist)
+	else:
+		return alist
+
 
 def quickSortHelper(alist,first,last):
 	if first<last:
@@ -530,3 +595,10 @@ def partition(alist,first,last):
 
 	return rightmark
 
+def ordinalStringList(string):
+	noSpace = string.replace(" ", "")
+	stringList = [ord(letter) for letter in noSpace]
+	return stringList
+
+def unicodeToString(uniList):
+	return "".join([chr(uni) for uni in uniList])
