@@ -396,209 +396,184 @@ class HashTable:
 	def __setitem__(self,key,data):
 		self.put(key,data)
 
-# Sorting algorithms follow
+# Class for sorting algorithms
+class listToSort:
 
-def shortBubbleSort(alist):
-
-	isString = False
-	if isinstance(alist, str):
-		alist = ordinalStringList(alist)
-		isString = True
+	def __init__(self, list):
+		self.list = list
+		self.isString = False
+		self.checkForString()
 	
-	exchanges = True
-	passnum = len(alist)-1
-	while passnum > 0 and exchanges:
-		exchanges = False
-		for i in range(passnum):
-			if alist[i]>alist[i+1]:
-				exchanges = True
-				temp = alist[i]
-				alist[i] = alist[i+1]
-				alist[i+1] = temp
-		passnum = passnum-1
-	
-	if isString:
-		return unicodeToString(alist)
-	else:
-		return alist
+	def checkForString(self):
+		if isinstance(self.list, str):
+			self.ordinalStringList()
+			self.isString = True
 
-def selectionSort(alist):
+	def shortBubbleSort(self):
+		
+		exchanges = True
+		passnum = len(self.list)-1
+		while passnum > 0 and exchanges:
+			exchanges = False
+			for i in range(passnum):
+				if self.list[i]>self.list[i+1]:
+					exchanges = True
+					temp = self.list[i]
+					self.list[i] = self.list[i+1]
+					self.list[i+1] = temp
+			passnum = passnum-1
+		
+		return self.returnFinalList()
 
-	isString = False
-	if isinstance(alist, str):
-		alist = ordinalStringList(alist)
-		isString = True
+	def selectionSort(self):
 
-	for fillslot in range(len(alist)-1,0,-1):
-		positionOfMax=0
-		for location in range(1,fillslot+1):
-			if alist[location]>alist[positionOfMax]:
-				positionOfMax = location
+		for fillslot in range(len(self.list)-1,0,-1):
+			positionOfMax=0
+			for location in range(1,fillslot+1):
+				if self.list[location]>self.list[positionOfMax]:
+					positionOfMax = location
 
-		temp = alist[fillslot]
-		alist[fillslot] = alist[positionOfMax]
-		alist[positionOfMax] = temp
+			temp = self.list[fillslot]
+			self.list[fillslot] = self.list[positionOfMax]
+			self.list[positionOfMax] = temp
 
-	if isString:
-		return unicodeToString(alist)
-	else:
-		return alist
+		return self.returnFinalList()
 
-def insertionSort(alist):
+	def insertionSort(self):
 
-	isString = False
-	if isinstance(alist, str):
-		alist = ordinalStringList(alist)
-		isString = True
+		for index in range(1,len(self.list)):
+			currentvalue = self.list[index]
+			position = index
 
-	for index in range(1,len(alist)):
-		currentvalue = alist[index]
-		position = index
+			while position>0 and self.list[position-1]>currentvalue:
+				self.list[position]=self.list[position-1]
+				position = position-1
 
-		while position>0 and alist[position-1]>currentvalue:
-			alist[position]=alist[position-1]
-			position = position-1
+			self.list[position]=currentvalue
+		
+		return self.returnFinalList()
 
-		alist[position]=currentvalue
-	
-	if isString:
-		return unicodeToString(alist)
-	else:
-		return alist
+	def shellSort(self):
 
-def shellSort(alist):
+		sublistcount = len(self.list)//2
+		while sublistcount > 0:
 
-	isString = False
-	if isinstance(alist, str):
-		alist = ordinalStringList(alist)
-		isString = True
+			for startposition in range(sublistcount):
+				self.gapInsertionSort(startposition,sublistcount)
 
-	sublistcount = len(alist)//2
-	while sublistcount > 0:
+			print("After increments of size",sublistcount,"The list is",self.list)
 
-		for startposition in range(sublistcount):
-			gapInsertionSort(alist,startposition,sublistcount)
+			sublistcount = sublistcount // 2
 
-		print("After increments of size",sublistcount,"The list is",alist)
+		return self.returnFinalList()
 
-		sublistcount = sublistcount // 2
+	def gapInsertionSort(self,start,gap):
+		for i in range(start+gap,len(self.list),gap):
 
-	if isString:
-		return unicodeToString(alist)
-	else:
-		return alist
+			currentvalue = self.list[i]
+			position = i
 
-def gapInsertionSort(alist,start,gap):
-	for i in range(start+gap,len(alist),gap):
+			while position>=gap and self.list[position-gap]>currentvalue:
+				self.list[position]=self.list[position-gap]
+				position = position-gap
 
-		currentvalue = alist[i]
-		position = i
+			self.list[position]=currentvalue
 
-		while position>=gap and alist[position-gap]>currentvalue:
-			alist[position]=alist[position-gap]
-			position = position-gap
+	def mergeSort(self, blist=None):
+		
+		if blist == None:
+			alist = self.list
+		else:
+			alist = blist
 
-		alist[position]=currentvalue
+		if len(alist)>1:
+			print("Splitting ",alist)
+			mid = len(alist)//2
+			lefthalf = alist[:mid]
+			righthalf = alist[mid:]
 
-def mergeSort(alist):
+			self.mergeSort(lefthalf)
+			self.mergeSort(righthalf)
 
-	isString = False
-	if isinstance(alist, str):
-		alist = ordinalStringList(alist)
-		isString = True
+			i=0
+			j=0
+			k=0
+			while i < len(lefthalf) and j < len(righthalf):
+				if lefthalf[i] <= righthalf[j]:
+					alist[k]=lefthalf[i]
+					i=i+1
+				else:
+					alist[k]=righthalf[j]
+					j=j+1
+				k=k+1
 
-	if len(alist)>1:
-		print("Splitting ",alist)
-		mid = len(alist)//2
-		lefthalf = alist[:mid]
-		righthalf = alist[mid:]
-
-		mergeSort(lefthalf)
-		mergeSort(righthalf)
-
-		i=0
-		j=0
-		k=0
-		while i < len(lefthalf) and j < len(righthalf):
-			if lefthalf[i] <= righthalf[j]:
+			while i < len(lefthalf):
 				alist[k]=lefthalf[i]
-				i=i+1
-			else:
+				i=i+1	
+				k=k+1
+
+			while j < len(righthalf):
 				alist[k]=righthalf[j]
 				j=j+1
-			k=k+1
+				k=k+1
+			print("Merging ",alist)
+		
+		if len(alist) == len(self.list):
+			self.list = alist
+			return self.returnFinalList()
 
-		while i < len(lefthalf):
-			alist[k]=lefthalf[i]
-			i=i+1	
-			k=k+1
+	def quickSort(self):
 
-		while j < len(righthalf):
-			alist[k]=righthalf[j]
-			j=j+1
-			k=k+1
-		print("Merging ",alist)
-	
-	if isString:
-		return unicodeToString(alist)
-	else:
-		return alist
+		self.quickSortHelper(self.list,0,len(self.list)-1)
 
-def quickSort(alist):
+		return self.returnFinalList()
 
-	isString = False
-	if isinstance(alist, str):
-		alist = ordinalStringList(alist)
-		isString = True
+	def quickSortHelper(self,alist,first,last):
+		if first<last:
 
-	quickSortHelper(alist,0,len(alist)-1)
+			splitpoint = self.partition(alist,first,last)
 
-	if isString:
-		return unicodeToString(alist)
-	else:
-		return alist
+			self.quickSortHelper(alist,first,splitpoint-1)
+			self.quickSortHelper(alist,splitpoint+1,last)
 
+		if last == len(self.list)-1:
+			self.list = alist
 
-def quickSortHelper(alist,first,last):
-	if first<last:
+	def partition(self,alist,first,last):
+		pivotvalue = alist[first]
 
-		splitpoint = partition(alist,first,last)
+		leftmark = first+1
+		rightmark = last
 
-		quickSortHelper(alist,first,splitpoint-1)
-		quickSortHelper(alist,splitpoint+1,last)
+		done = False
+		while not done:
 
-def partition(alist,first,last):
-	pivotvalue = alist[first]
+			while leftmark <= rightmark and alist[leftmark] <= pivotvalue:
+				leftmark = leftmark + 1
 
-	leftmark = first+1
-	rightmark = last
+			while alist[rightmark] >= pivotvalue and rightmark >= leftmark:
+				rightmark = rightmark -1
 
-	done = False
-	while not done:
+			if rightmark < leftmark:
+				done = True
+			else:
+				temp = alist[leftmark]
+				alist[leftmark] = alist[rightmark]
+				alist[rightmark] = temp
 
-		while leftmark <= rightmark and alist[leftmark] <= pivotvalue:
-			leftmark = leftmark + 1
+		temp = alist[first]
+		alist[first] = alist[rightmark]
+		alist[rightmark] = temp
 
-		while alist[rightmark] >= pivotvalue and rightmark >= leftmark:
-			rightmark = rightmark -1
+		return rightmark
 
-		if rightmark < leftmark:
-			done = True
+	def ordinalStringList(self):
+		noSpace = self.list.replace(" ", "")
+		stringList = [ord(letter) for letter in noSpace]
+		self.list = stringList
+
+	def returnFinalList(self):
+		if self.isString:
+			return "".join([chr(uni) for uni in self.list])
 		else:
-			temp = alist[leftmark]
-			alist[leftmark] = alist[rightmark]
-			alist[rightmark] = temp
-
-	temp = alist[first]
-	alist[first] = alist[rightmark]
-	alist[rightmark] = temp
-
-	return rightmark
-
-def ordinalStringList(string):
-	noSpace = string.replace(" ", "")
-	stringList = [ord(letter) for letter in noSpace]
-	return stringList
-
-def unicodeToString(uniList):
-	return "".join([chr(uni) for uni in uniList])
+			return self.list
