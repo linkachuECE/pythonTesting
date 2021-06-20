@@ -1,6 +1,6 @@
 from DataStructureExamples import *
 from random import randrange
 
-list = listToSort([5,4,3,2,1,0])
+list = ListToSearch([76, 42, 99, 88, 11, 19])
 
-print(list.quickSort())
+print(list.binarySearch(93))

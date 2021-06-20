@@ -396,8 +396,7 @@ class HashTable:
 	def __setitem__(self,key,data):
 		self.put(key,data)
 
-# Class for sorting algorithms
-class listToSort:
+class ListToSort:
 
 	def __init__(self, list):
 		self.list = list
@@ -577,3 +576,56 @@ class listToSort:
 			return "".join([chr(uni) for uni in self.list])
 		else:
 			return self.list
+
+class ListToSearch(ListToSort):
+
+	def __init__(self, list):
+		super().__init__(list)
+		self.found = False
+		self.pos = None
+		self.item = None
+	
+	def __str__(self):
+		if self.found:
+			return "{} found at position {}".format(self.item, self.pos)
+		else:
+			return "Item not found"
+	
+	def sequentialSearch(self, item):
+		self.item = item
+		pos = 0
+
+		while pos < len(self.list) and not self.found:
+			if self.list[pos] == item:
+				self.found = True
+			else:
+				pos = pos+1
+		
+		if self.found:
+			self.pos = pos
+
+		return self.__str__()
+
+	def binarySearch(self, item):
+		self.mergeSort(self.list)
+		print("Sorted the list:", self.list)
+		self.item = item
+
+		first = 0
+		last = len(self.list)-1
+		midpoint = None
+		self.found = False
+
+		while first <=last and not self.found:
+			midpoint = (first + last)//2
+			if self.list[midpoint] == self.item:
+				self.found = True
+			else:
+				if self.item < self.list[midpoint]:
+					last = midpoint - 1
+				else:
+					first = midpoint + 1
+
+		self.pos = midpoint
+
+		return self.__str__()
