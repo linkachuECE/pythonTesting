@@ -1,6 +1,16 @@
 from DataStructureExamples import *
-from random import randrange
+from random import randint, randrange
+from functionBenchmarkComparison import *
 
-list = ListToSearch([76, 42, 99, 88, 11, 19])
+def iterativeBinarySearchTest():
+    list = ListToSearch([randint(0,9) for x in range(randint(3,10))])
+    #print(list.binarySearch(5))
 
-print(list.binarySearch(93))
+def recursiveBinarySearchTest():
+    list = ListToSearch([randint(0,9) for x in range(randint(3,10))])
+    #print(list.recursiveBinarySearch(5))
+
+# print(timeit.timeit(iterativeBinarySearchTest, number=1000000))
+# print(timeit.timeit(recursiveBinarySearchTest, number=1000000))
+
+compareFunctions(10000, iterativeBinarySearchTest, recursiveBinarySearchTest)

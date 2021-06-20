@@ -134,7 +134,7 @@ class LinkedList:
 		if self.search(item):
 			current = self.head.getNext()
 			for i in range(self.size()):
-				print("testing", current.getData(), "at index", i)
+				#print("testing", current.getData(), "at index", i)
 				if item == current.getData(): return i
 				current = current.getNext()
 		else: return -1
@@ -460,7 +460,7 @@ class ListToSort:
 			for startposition in range(sublistcount):
 				self.gapInsertionSort(startposition,sublistcount)
 
-			print("After increments of size",sublistcount,"The list is",self.list)
+			#print("After increments of size",sublistcount,"The list is",self.list)
 
 			sublistcount = sublistcount // 2
 
@@ -486,7 +486,7 @@ class ListToSort:
 			alist = blist
 
 		if len(alist)>1:
-			print("Splitting ",alist)
+			#print("Splitting ",alist)
 			mid = len(alist)//2
 			lefthalf = alist[:mid]
 			righthalf = alist[mid:]
@@ -515,7 +515,7 @@ class ListToSort:
 				alist[k]=righthalf[j]
 				j=j+1
 				k=k+1
-			print("Merging ",alist)
+			#print("Merging ",alist)
 		
 		if len(alist) == len(self.list):
 			self.list = alist
@@ -608,7 +608,7 @@ class ListToSearch(ListToSort):
 
 	def binarySearch(self, item):
 		self.mergeSort(self.list)
-		print("Sorted the list:", self.list)
+		#print("Sorted the list:", self.list)
 		self.item = item
 
 		first = 0
@@ -625,7 +625,30 @@ class ListToSearch(ListToSort):
 					last = midpoint - 1
 				else:
 					first = midpoint + 1
-
 		self.pos = midpoint
 
 		return self.__str__()
+	
+	def recursiveBinarySearch(self, item, alist=None, posOfMidPoint=None):
+		if alist == None:
+			self.mergeSort(self.list)
+			#print("Sorted the list:", self.list)
+			alist = self.list
+			posOfMidPoint = len(alist)//2
+			self.item = item
+		
+		if len(alist) == 0:
+			return self.__str__()
+		else: 
+			midpoint = len(alist)//2
+			if alist[midpoint]==item:
+				self.pos = posOfMidPoint
+				self.found = True
+				return self.__str__()
+			else:
+				if item<alist[midpoint]:
+					return self.recursiveBinarySearch(item, alist[:midpoint],
+					(posOfMidPoint - midpoint//2)-1)
+				else:
+					return self.recursiveBinarySearch(item, alist[midpoint+1:],
+					(posOfMidPoint + midpoint//2 + 1))
