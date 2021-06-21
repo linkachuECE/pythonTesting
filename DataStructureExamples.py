@@ -1,3 +1,6 @@
+from typing import SupportsFloat
+
+
 class Stack:
 	def __init__(self):
 		self.items = []
@@ -337,7 +340,7 @@ class LinkedListDeque:
 
 class HashTable:
 	def __init__(self):
-		self.size = 11
+		self.size = 101
 		self.slots = [None] * self.size
 		self.data = [None] * self.size
 	
@@ -350,57 +353,61 @@ class HashTable:
 		else:
 			return False
 	
+	def __delitem__(self, key):
+		position = self.binaryProbe(self.hashfunction(key), key)
+		if position == None:
+			print("No item at that index")
+		else:
+			self.slots[position] = None
+			self.data[position] = None
+	
 	def put(self,key,data=None):
-		hashvalue = self.hashfunction(key,len(self.slots))
-		if data == None:
-			data = key
-		
-		if self.slots[hashvalue] == None:
+		hashvalue = self.binaryProbe(self.hashfunction(key))
+
+		if hashvalue == None:
+			self.size = self.size + 1
+			self.slots.append(key)
+			self.data.append(data)
+		else:
 			self.slots[hashvalue] = key
 			self.data[hashvalue] = data
+	
+	def binaryProbe(self, slot, key=None, firstProbe=None):
+		if firstProbe == None:
+			firstProbe = slot
+			if self.slots[slot] == key:
+				return slot
+		
+		nextSlot = self.rehash(slot)
+
+		if self.slots[nextSlot] == key:
+			return nextSlot
+		elif nextSlot == firstProbe:
+			return None
+		elif self.slots[nextSlot] == len(self.slots):
+			self.binaryProbe(0, key, firstProbe)
 		else:
-			if self.slots[hashvalue] == key:
-				self.data[hashvalue] = data
-			else:
-				nextslot = self.rehash(hashvalue,len(self.slots))
-				while self.slots[nextslot] != None and self.slots[nextslot] != key:
-					nextslot = self.rehash(nextslot, len(self.slots))
-				
-				if self.slots[nextslot] == None:
-					self.slots[nextslot] = key
-					self.data[nextslot] = data
+			self.binaryProbe(nextSlot, key, firstProbe)
 					
-	def hashfunction(self,key,size):
+	def hashfunction(self,key):
 		if isinstance(key, str):
 			totalOrd = 0
 			for char in key:
 				totalOrd += ord(char)
-			return totalOrd%size
+			return totalOrd%self.size
 		else:
-			return key%size
+			return key%self.size
 	
-	def rehash(self,oldhash,size):
-		return (oldhash+1)%size
+	def rehash(self,oldhash):
+		return (oldhash+1)%len(self.slots)
 	
 	def get(self,key):
-		startslot = self.hashfunction(key,len(self.slots))
 
-		data = None
-		stop = False
-		found = False
-		position = startslot
-		while self.slots[position] != None and not found and not stop:
-			if self.slots[position] == key:
-				found = True
-				data = self.data[position]
-			else:
-				position=self.rehash(position, len(self.slots))
-				if position == startslot:
-					stop = True
-		if found:
-			return position
+		position = self.binaryProbe(self.hashfunction(key),key)
+		if position == None:
+			return "Item not found"
 		else:
-			return None
+			return self.data[position]
 	
 	def __getitem__(self,key):
 		return self.get(key)

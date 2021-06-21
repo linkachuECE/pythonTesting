@@ -1,7 +1,10 @@
 from DataStructureExamples import *
 from functionBenchmarkComparison import *
+import random
 
 testHash = HashTable()
-testHash.put(7)
+for i in range(testHash.size):
+    testHash[i] = random.randint(0,20)
 
-print(7 in testHash)
+testHash[300] = 15
+print(testHash[300])
