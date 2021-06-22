@@ -339,8 +339,8 @@ class LinkedListDeque:
 		return self.items.size()
 
 class HashTable:
-	def __init__(self):
-		self.size = 101
+	def __init__(self,size=11):
+		self.size = size
 		self.slots = [None] * self.size
 		self.data = [None] * self.size
 	
@@ -354,7 +354,7 @@ class HashTable:
 			return False
 	
 	def __delitem__(self, key):
-		position = self.binaryProbe(self.hashfunction(key), key)
+		position = self.linearProbe(self.hashfunction(key), key)
 		if position == None:
 			print("No item at that index")
 		else:
@@ -362,7 +362,7 @@ class HashTable:
 			self.data[position] = None
 	
 	def put(self,key,data=None):
-		hashvalue = self.binaryProbe(self.hashfunction(key))
+		hashvalue = self.linearProbe(self.hashfunction(key))
 
 		if hashvalue == None:
 			self.size = self.size + 1
@@ -372,7 +372,7 @@ class HashTable:
 			self.slots[hashvalue] = key
 			self.data[hashvalue] = data
 	
-	def binaryProbe(self, slot, key=None, firstProbe=None):
+	def linearProbe(self, slot, key=None, firstProbe=None):
 		if firstProbe == None:
 			firstProbe = slot
 			if self.slots[slot] == key:
@@ -385,9 +385,9 @@ class HashTable:
 		elif nextSlot == firstProbe:
 			return None
 		elif self.slots[nextSlot] == len(self.slots):
-			self.binaryProbe(0, key, firstProbe)
+			return self.linearProbe(0, key, firstProbe)
 		else:
-			self.binaryProbe(nextSlot, key, firstProbe)
+			return self.linearProbe(nextSlot, key, firstProbe)
 					
 	def hashfunction(self,key):
 		if isinstance(key, str):
@@ -403,7 +403,7 @@ class HashTable:
 	
 	def get(self,key):
 
-		position = self.binaryProbe(self.hashfunction(key),key)
+		position = self.linearProbe(self.hashfunction(key),key)
 		if position == None:
 			return "Item not found"
 		else:
@@ -428,7 +428,6 @@ class ListToSort:
 			self.isString = True
 
 	def shortBubbleSort(self):
-		
 		exchanges = True
 		passnum = len(self.list)-1
 		while passnum > 0 and exchanges:
@@ -444,7 +443,6 @@ class ListToSort:
 		return self.returnFinalList()
 
 	def selectionSort(self):
-
 		for fillslot in range(len(self.list)-1,0,-1):
 			positionOfMax=0
 			for location in range(1,fillslot+1):
@@ -458,7 +456,6 @@ class ListToSort:
 		return self.returnFinalList()
 
 	def insertionSort(self):
-
 		for index in range(1,len(self.list)):
 			currentvalue = self.list[index]
 			position = index
@@ -472,7 +469,6 @@ class ListToSort:
 		return self.returnFinalList()
 
 	def shellSort(self):
-
 		sublistcount = len(self.list)//2
 		while sublistcount > 0:
 
@@ -498,7 +494,6 @@ class ListToSort:
 			self.list[position]=currentvalue
 
 	def mergeSort(self, blist=None):
-		
 		if blist == None:
 			alist = self.list
 		else:
@@ -541,7 +536,6 @@ class ListToSort:
 			return self.returnFinalList()
 
 	def quickSort(self):
-
 		self.quickSortHelper(self.list,0,len(self.list)-1)
 
 		return self.returnFinalList()
