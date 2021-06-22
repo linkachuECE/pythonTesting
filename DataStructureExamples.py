@@ -435,12 +435,27 @@ class ListToSort:
 			for i in range(passnum):
 				if self.list[i]>self.list[i+1]:
 					exchanges = True
-					temp = self.list[i]
-					self.list[i] = self.list[i+1]
-					self.list[i+1] = temp
+					self.list[i], self.list[i+1] = self.list[i+1], self.list[i]
 			passnum = passnum-1
 		
 		return self.returnFinalList()
+	
+	def doubleBubbleSort(self,searchDirection=1):
+		exchanges = False
+		if searchDirection > 0:
+			for i in range(len(self.list)-1):
+				if self.list[i]>self.list[i+1]:
+					exchanges = True
+					self.list[i], self.list[i+1] = self.list[i+1], self.list[i]
+			if exchanges:
+				self.doubleBubbleSort(-1)
+		else:
+			for i in range(-1, -len(self.list), -1):
+				if self.list[i]<self.list[i-1]:
+					exchanges = True
+					self.list[i], self.list[i-1] = self.list[i-1], self.list[i]
+			if exchanges:
+				self.doubleBubbleSort(1)
 
 	def selectionSort(self):
 		for fillslot in range(len(self.list)-1,0,-1):
@@ -449,9 +464,8 @@ class ListToSort:
 				if self.list[location]>self.list[positionOfMax]:
 					positionOfMax = location
 
-			temp = self.list[fillslot]
-			self.list[fillslot] = self.list[positionOfMax]
-			self.list[positionOfMax] = temp
+			self.list[fillslot], self.list[positionOfMax] = \
+				self.list[positionOfMax], self.list[fillslot]
 
 		return self.returnFinalList()
 
@@ -536,9 +550,11 @@ class ListToSort:
 			return self.returnFinalList()
 
 	def quickSort(self):
-		self.quickSortHelper(self.list,0,len(self.list)-1)
-
-		return self.returnFinalList()
+		if len(self.list) > 5:
+			self.quickSortHelper(self.list,0,len(self.list)-1)
+			return self.returnFinalList()
+		else:
+			return self.selectionSort()
 
 	def quickSortHelper(self,alist,first,last):
 		if first<last:
