@@ -3,11 +3,11 @@ from DataStructureExamples import *
 from functionBenchmarkComparison import *
 import random
 
-mytree = BinarySearchTree()
-mytree[3]="red"
-mytree[4]="blue"
-mytree[6]="yellow"
-mytree[2]="at"
+mytree = BinaryTree("language")
 
-print(mytree[6])
-print(mytree[2])
+mytree.insertLeft("compiled")
+mytree.getLeftChild().insertLeft("C")
+mytree.getLeftChild().insertRight("Java")
+mytree.insertRight("interpreted")
+mytree.getRightChild().insertLeft("Python")
+mytree.getRightChild().insertRight("Scheme")

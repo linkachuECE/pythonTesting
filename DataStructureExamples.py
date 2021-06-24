@@ -704,7 +704,6 @@ class BinaryTree:
             t.rightChild = self.rightChild
             self.rightChild = t
 
-
     def getRightChild(self):
         return self.rightChild
 
@@ -717,10 +716,47 @@ class BinaryTree:
     def getRootVal(self):
         return self.key
 
+class ParseTree:
+	def __init__(self, fpexp):
+		self.fplist = fpexp.split()
+		self.pStack = Stack()
+		self.eTree = BinaryTree('')
+		self.pStack.push(self.eTree)
+		self.buildParseTree()
+
+	def buildParseTree(self):
+		currentTree = self.eTree
+
+		for i in self.fplist:
+			if i == '(':
+				currentTree.insertLeft('')
+				self.pStack.push(currentTree)
+				currentTree = currentTree.getLeftChild()
+
+			elif i in ['+', '-', '*', '/']:
+				currentTree.setRootVal(i)
+				currentTree.insertRight('')
+				self.pStack.push(currentTree)
+				currentTree = currentTree.getRightChild()
+
+			elif i == ')':
+				currentTree = self.pStack.pop()
+
+			elif i not in ['+', '-', '*', '/']:
+				try:
+					currentTree.setRootVal(int(i))
+					parent = self.pStack.pop()
+					currentTree = parent
+				except ValueError:
+					raise ValueError("token '{}' is not a valid integer".format(i))
+
 class BinHeap:
 	def __init__(self):
 		self.heapList = [0]
 		self.currentSize = 0
+	
+	def __str__(self):
+		return str(self.heapList[1:])
 	
 	def percUp(self,i):
 		while i // 2 > 0:
@@ -741,6 +777,7 @@ class BinHeap:
 			if self.heapList[i] > self.heapList[mc]:
 				tmp = self.heapList[i]
 				self.heapList[i] = self.heapList[mc]
+				self.heapList[mc] = tmp
 			i = mc
 	
 	def minChild(self,i):
@@ -750,10 +787,7 @@ class BinHeap:
 			if self.heapList[i*2] < self.heapList[i*2+1]:
 				return i * 2
 			else:
-				if self.heapList[i*2] < self.heapList[i*2+1]:
-					return i * 2
-				else:
-					return i * 2 + 1
+				return i * 2 + 1
 	
 	def delMin(self):
 		retval = self.heapList[1]
@@ -892,8 +926,45 @@ class BinarySearchTree:
 	
 	def __delitem__(self,key):
 		self.delete(key)
+	
+	def remove(self,currentNode):
+		if currentNode.isLeaf():
+			if currentNode == currentNode.parent.leftChild:
+				currentNode.parent.leftChild = None
+			else:
+				currentNode.parent.rightChild = None
+		elif currentNode.hasBothChildren:
+			succ = currentNode.findSuccessor()
+			succ.spliceOut()
+			currentNode.key = succ.key
+			currentNode.payload = succ.payload
+		else:
+			if currentNode.hasLeftChild():
+				if currentNode.isLeftchild():
+					currentNode.leftChild.parent = currentNode.parent
+					currentNode.parent.leftChild = currentNode.leftChild
+				elif currentNode.isRightChild():
+					currentNode.leftChild.parent = currentNode.parent
+					currentNode.parent.rightChild = currentNode.leftChild
+				else:
+					currentNode.replaceNodeData(currentNode.leftChild.key,
+												currentNode.leftChild.payload,
+												currentNode.leftchild.leftChild,
+												currentNode.leftChild.rightChild)
+			else:
+				if currentNode.isLeftChild():
+					currentNode.rightChild.parent = currentNode.parent
+					currentNode.parent.leftChild = currentNode.rightChild
+				elif currentNode.isRightChild():
+					currentNode.rightChild.parent = currentNode.parent
+					currentNode.parent.rightChild = currentNode.rightChild
+				else:
+					currentNode.replaceNodeData(currentNode.rightChild.key,
+												currentNode.rightChild.payload,
+												currentNode.rightChild.leftChild,
+												currentNode.rightChild.rightChild)
 
-class TreeNode:
+class TreeNode():
 	def __init__(self,key,val,left=None,right=None,parent=None):
 		self.key = key
 		self.payload = val
