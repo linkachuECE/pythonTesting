@@ -3,5 +3,11 @@ from DataStructureExamples import *
 from functionBenchmarkComparison import *
 import random
 
-bh = BinHeap()
-bh.buildHeap([5,4,3,2,1])
+mytree = BinarySearchTree()
+mytree[3]="red"
+mytree[4]="blue"
+mytree[6]="yellow"
+mytree[2]="at"
+
+print(mytree[6])
+print(mytree[2])
