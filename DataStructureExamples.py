@@ -718,7 +718,7 @@ class BinaryTree:
 
 class ParseTree:
 	def __init__(self, fpexp):
-		self.fplist = fpexp.split()
+		self.fplist = [character for character in fpexp if character != " "]
 		self.pStack = Stack()
 		self.eTree = BinaryTree('')
 		self.pStack.push(self.eTree)
@@ -964,6 +964,67 @@ class BinarySearchTree:
 												currentNode.rightChild.leftChild,
 												currentNode.rightChild.rightChild)
 
+	def inOrderTraversal(self):
+		# nStack = Stack()
+		# current = self.root
+		# nStack.push(current)
+
+		# while not nStack.isEmpty():
+		# 	if current.hasBothChildren():
+		# 		if not current.leftChild.hasBeenChecked:
+		# 			nStack.push(current)
+		# 			current = current.leftChild
+		# 		elif not current.rightChild.hasBeenChecked:
+		# 			print(current.payload)
+		# 			nStack.push(current)
+		# 			current = current.rightChild
+		# 		else:
+		# 			current.hasBeenChecked = True
+		# 			current = nStack.pop()
+
+		# 	elif current.hasLeftChild():
+		# 		if not current.leftChild.hasBeenChecked:
+		# 			nStack.push(current)
+		# 			current = current.leftChild
+		# 		else:
+		# 			print(current.payload)
+		# 			current.hasBeenChecked = True
+		# 			current = nStack.pop()
+
+		# 	elif current.hasRightChild():
+		# 		if not current.rightChild.hasBeenChecked:
+		# 			print(current.payload)
+		# 			nStack.push(current)
+		# 			current = current.rightChild
+		# 		else:
+		# 			current.hasBeenChecked = True
+		# 			current = nStack.pop()
+			
+		# 	elif not current.hasAnyChildren():
+		# 		print(current.payload)
+		# 		current.hasBeenChecked = True
+		# 		current = nStack.pop()
+
+		# 	else:
+		# 		break
+
+		current = self.root
+		while current.hasLeftChild():
+			current = current.leftChild
+		
+		while current != None:
+			print(current.payload)
+			current = current.findSuccessor()	
+
+	def postOrderTraversal(self):
+		current = self.root
+		while current.hasRightChild():
+			current = current.rightChild
+		
+		while current != None:
+			print(current.payload)
+			current = current.findPredecessor()
+
 class TreeNode():
 	def __init__(self,key,val,left=None,right=None,parent=None):
 		self.key = key
@@ -971,6 +1032,7 @@ class TreeNode():
 		self.leftChild = left
 		self.rightChild = right
 		self.parent = parent
+		self.hasBeenChecked = False
 	
 	def hasLeftChild(self):
 		return self.leftChild
@@ -1022,19 +1084,39 @@ class TreeNode():
 			succ = self.rightChild.findMin()
 		else:
 			if self.parent:
-				if self.parent:
-					if self.isLeftChild():
-						succ = self.parent
-					else:
-						self.parent.rightChild = None
-						succ = self.parent.findSuccessor()
-						self.parent.rightChild = self
+				if self.isLeftChild():
+					succ = self.parent
+				else:
+					self.parent.rightChild = None
+					succ = self.parent.findSuccessor()
+					self.parent.rightChild = self
 		return succ
 	
+	def findPredecessor(self):
+		pred = None
+		if self.hasLeftChild():
+			pred = self.leftChild.findMax()
+		else:
+			if self.parent:
+				if self.isRightChild():
+					pred = self.parent
+				else:
+					self.parent.leftChild = None
+					pred = self.parent.findPredecessor()
+					self.parent.rightChild = self
+		return pred
+					
+
 	def findMin(self):
 		current = self
 		while current.hasLeftChild():
 			current = current.leftChild
+		return current
+	
+	def findMax(self):
+		current = self
+		while current.hasRightChild():
+			current = current.rightChild
 		return current
 	
 	def replaceNodeData(self,key,value,lc,rc):
