@@ -750,8 +750,12 @@ class ParseTree:
 				except ValueError:
 					raise ValueError("token '{}' is not a valid integer".format(i))
 
-class BinHeap:
-	def __init__(self):
+class BinMinHeap:
+	def __init__(self,size=None):
+		if size == None:
+			self.maxSize = 31
+		else:
+			self.maxSize = size
 		self.heapList = [0]
 		self.currentSize = 0
 	
@@ -770,6 +774,9 @@ class BinHeap:
 		self.heapList.append(k)
 		self.currentSize = self.currentSize + 1
 		self.percUp(self.currentSize)
+		if self.currentSize > self.maxSize:
+			self.heapList.pop()
+			self.currentSize = self.currentSize - 1
 	
 	def percDown(self,i):
 		while (i * 2) <= self.currentSize:
@@ -804,6 +811,9 @@ class BinHeap:
 		while (i > 0):
 			self.percDown(i)
 			i = i - 1
+		while self.currentSize > self.maxSize:
+			self.heapList.pop()
+			self.currentSize = self.currentSize - 1
 	
 	def remove(self,currentNode):
 		if currentNode.isLeaf():
@@ -883,6 +893,8 @@ class BinarySearchTree:
 			else:
 				currentNode.leftChild = \
 					TreeNode(key,val,parent=currentNode)
+		elif key == currentNode.key:
+			currentNode.payload = val
 		else:
 			if currentNode.hasRightChild():
 				self._put(key,val,currentNode.rightChild)
@@ -1024,6 +1036,71 @@ class BinarySearchTree:
 		while current != None:
 			print(current.payload)
 			current = current.findPredecessor()
+
+class BinMaxHeap:
+	def __init__(self,size=None):
+		if size == None:
+			self.maxSize = 31
+		else:
+			self.maxSize = size
+		self.heapList = [0]
+		self.currentSize = 0
+	
+	def __str__(self):
+		return str(self.heapList[1:])
+	
+	def percUp(self,i):
+		while i // 2 > 0:
+			if self.heapList[i] > self.heapList[i//2]:
+				tmp = self.heapList[i//2]
+				self.heapList[i//2] = self.heapList[i]
+				self.heapList[i] = tmp
+			i = i//2
+	
+	def insert(self,k):
+		self.heapList.append(k)
+		self.currentSize = self.currentSize + 1
+		self.percUp(self.currentSize)
+		if self.currentSize > self.maxSize:
+			self.heapList.pop()
+			self.currentSize = self.currentSize - 1
+	
+	def percDown(self,i):
+		while (i * 2) <= self.currentSize:
+			mc = self.maxChild(i)
+			if self.heapList[i] < self.heapList[mc]:
+				tmp = self.heapList[i]
+				self.heapList[i] = self.heapList[mc]
+				self.heapList[mc] = tmp
+			i = mc
+	
+	def maxChild(self,i):
+		if i * 2 + 1 > self.currentSize:
+			return i * 2
+		else:
+			if self.heapList[i*2] > self.heapList[i*2+1]:
+				return i * 2
+			else:
+				return i * 2 + 1
+	
+	def delMax(self):
+		retval = self.heapList[1]
+		self.heapList[1] = self.heapList[self.currentSize]
+		self.currentSize = self.currentSize - 1
+		self.heapList.pop()
+		self.percDown(1)
+		return retval
+	
+	def buildHeap(self,alist):
+		i = len(alist) // 2
+		self.currentSize = len(alist)
+		self.heapList = [0] + alist[:]
+		while (i > 0):
+			self.percDown(i)
+			i = i - 1
+		while self.currentSize > self.maxSize:
+			self.heapList.pop()
+			self.currentSize = self.currentSize - 1
 
 class TreeNode():
 	def __init__(self,key,val,left=None,right=None,parent=None):
