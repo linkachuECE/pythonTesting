@@ -1,6 +1,7 @@
 from typing import List
 from DataStructureExamples import *
 from functionBenchmarkComparison import *
-import random
-import sympy
 
+myTree = ParseTree("x**5")
+
+print(myTree.differentiate())

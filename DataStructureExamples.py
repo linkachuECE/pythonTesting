@@ -1,5 +1,7 @@
-from typing import SupportsFloat
+import operator
+from typing import SupportsFloat, final
 
+from numpy import isin	
 
 class Stack:
 	def __init__(self):
@@ -718,11 +720,44 @@ class BinaryTree:
 
 class ParseTree:
 	def __init__(self, fpexp):
-		self.fplist = [character for character in fpexp if character != " "]
+		self.fplist = self.initialList(fpexp)
 		self.pStack = Stack()
 		self.eTree = BinaryTree('')
-		self.pStack.push(self.eTree)
+		#self.pStack.push(self.eTree)
 		self.buildParseTree()
+
+	def initialList(self, fpexp):
+		finalList = []
+		i = 0
+		intList = "1234567890"
+		while i < len(fpexp):
+			if fpexp[i].isspace():
+				i += 1
+			elif fpexp[i].isalpha():
+				finalList.append(fpexp[i])
+				i += 1
+			elif fpexp[i] in "+-/()":
+				finalList.append(fpexp[i])
+				i += 1
+			elif fpexp[i] == "*":
+				if fpexp[i+1] == "*":
+					finalList.append("**")
+					i += 2
+				else:
+					finalList.append("*")
+					i += 1
+			elif fpexp[i] in intList:
+				currentstr = fpexp[i]
+				if i < len(fpexp) - 1:
+					while fpexp[i+1] in intList:
+						currentstr += fpexp[i+1]
+						i += 1
+				finalList.append(currentstr)
+				i += 1
+			else:
+				raise ValueError("{} is not a valid character for an equation".format(fpexp[i]))
+		
+		return finalList
 
 	def buildParseTree(self):
 		currentTree = self.eTree
@@ -733,22 +768,65 @@ class ParseTree:
 				self.pStack.push(currentTree)
 				currentTree = currentTree.getLeftChild()
 
-			elif i in ['+', '-', '*', '/']:
-				currentTree.setRootVal(i)
-				currentTree.insertRight('')
-				self.pStack.push(currentTree)
-				currentTree = currentTree.getRightChild()
+			elif i in ['+', '-', '*', '/', '**']:
+				if not currentTree.key:
+					currentTree.setRootVal(i)
+					currentTree.insertRight('')
+					self.pStack.push(currentTree)
+					currentTree = currentTree.getRightChild()
+				else:
+					try:
+						parent = self.pStack.pop()
+						newNode = BinaryTree(i)
+						parent.rightChild = newNode
+						self.pStack.push(parent)
+						newNode.leftChild = currentTree
+						newNode.insertRight('')
+						self.pStack.push(newNode)
+						currentTree = newNode.getRightChild()
+					except IndexError:
+						parent = BinaryTree(i)
+						self.eTree = parent
+						parent.leftChild = currentTree
+						parent.insertRight('')
+						self.pStack.push(parent)
+						currentTree = parent.getRightChild()
+						
 
 			elif i == ')':
-				currentTree = self.pStack.pop()
+				try:
+					currentTree = self.pStack.pop()
+				except IndexError:
+					parent = BinaryTree('')
+					parent.leftChild = currentTree
+					self.eTree = parent
+					currentTree = parent
 
-			elif i not in ['+', '-', '*', '/']:
+			elif i.isalpha():
+				currentTree.setRootVal(i)
+				try:
+					parent = self.pStack.pop()
+					currentTree = parent
+				except IndexError:
+					parent = BinaryTree('')
+					self.eTree = parent
+					parent.leftChild = currentTree
+					currentTree = parent
+
+			else:
 				try:
 					currentTree.setRootVal(int(i))
 					parent = self.pStack.pop()
 					currentTree = parent
 				except ValueError:
-					raise ValueError("token '{}' is not a valid integer".format(i))
+					raise ValueError("{} is not a valid character".format(i))
+
+	def differentiate(self):
+		expression = ""
+		currentTree = self.eTree
+		if currentTree.key == "**":
+			expression = "{}{}**{}".format(currentTree.rightChild.key,currentTree.leftChild.key, currentTree.rightChild.key - 1)
+		return expression
 
 class BinMinHeap:
 	def __init__(self,size=None):
@@ -814,43 +892,6 @@ class BinMinHeap:
 		while self.currentSize > self.maxSize:
 			self.heapList.pop()
 			self.currentSize = self.currentSize - 1
-	
-	def remove(self,currentNode):
-		if currentNode.isLeaf():
-			if currentNode == currentNode.parent.leftChild:
-				currentNode.parent.leftChild = None
-			else:
-				currentNode.parent.rightChild = None
-		elif currentNode.hasBothChildren():
-			succ = currentNode.findSuccessor()
-			succ.spliceOut()
-			currentNode.key = succ.key
-			currentNode.payload = succ.payload
-		else:
-			if currentNode.hasLeftChild():
-				if currentNode.isLeftChild():
-					currentNode.leftChild.parent = currentNode.parent
-					currentNode.parent.leftChild = currentNode.leftChild
-				elif currentNode.isRightChild():
-					currentNode.leftChild.parent = currentNode.parent
-					currentNode.parent.rightChild = currentNode.leftChild
-				else:
-					currentNode.replaceNodeData(currentNode.leftChild.key,
-											currentNode.leftChild.payload,
-											currentNode.leftChild.leftChild,
-											currentNode.leftChild.rightChild)
-			else:
-				if currentNode.isLeftChild():
-					currentNode.rightChild.parent = currentNode.parent
-					currentNode.parent.leftChild = currentNode.rightChild
-				elif currentNode.isRightChild():
-					currentNode.rightChild.parent = currentNode.parent
-					currentNode.parent.rightchild = currentNode.rightChild
-				else:
-					currentNode.replaceNodeData(currentNode.rightChild.key,
-												currentNode.rightChild.payload,
-												currentNode.rightChild.leftChild,
-												currentNode.rightChild.rightChild)
 
 class BinarySearchTree:
 
@@ -1102,7 +1143,7 @@ class BinMaxHeap:
 			self.heapList.pop()
 			self.currentSize = self.currentSize - 1
 
-class TreeNode():
+class TreeNode:
 	def __init__(self,key,val,left=None,right=None,parent=None):
 		self.key = key
 		self.payload = val
@@ -1205,3 +1246,13 @@ class TreeNode():
 			self.leftChild.parent = self
 		if self.hasRightChild.parent:
 			self.rightChild.parent = self
+
+class PriorityQueue(BinMinHeap):
+	def __init__(self, size=None):
+		super().__init__(size)
+	
+	def enqueue(self, item):
+		self.insert(item)
+	
+	def dequeue(self):
+		return self.delMin()
